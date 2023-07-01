@@ -29,7 +29,6 @@
 
 #include <stdint.h>
 #include "igzip_lib.h"
-#include "crc.h"
 #include "huff_codes.h"
 #include "igzip_checksums.h"
 #include "igzip_wrapper.h"

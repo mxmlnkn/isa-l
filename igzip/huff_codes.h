@@ -34,7 +34,6 @@
 #include <string.h>
 #include <assert.h>
 #include "igzip_lib.h"
-#include "bitbuf2.h"
 
 #if __x86_64__  || __i386__ || _M_X64 || _M_IX86
 # include <immintrin.h>
@@ -129,58 +128,5 @@ struct huff_code {
 		uint32_t code_and_length;
 	};
 };
-
-struct tree_node {
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-	uint32_t child;
-	uint32_t depth;
-#else
-	uint32_t depth;
-	uint32_t child;
-#endif
-};
-
-struct heap_tree {
-	union {
-		uint64_t heap[HEAP_TREE_SIZE];
-		uint64_t code_len_count[MAX_HUFF_TREE_DEPTH + 1];
-		struct tree_node tree[HEAP_TREE_SIZE];
-	};
-};
-
-struct rl_code {
-	uint8_t code;
-	uint8_t extra_bits;
-};
-
-struct hufftables_icf {
-	union {
-		struct {
-			struct huff_code dist_lit_table[288];
-			struct huff_code len_table[256];
-		};
-
-		struct {
-			struct huff_code dist_table[31];
-			struct huff_code lit_len_table[513];
-		};
-	};
-};
-
-/**
- * @brief Creates a representation of the huffman code from a histogram used to
- * decompress the intermediate compression format.
- *
- * @param bb: bitbuf structure where the header huffman code header is written
- * @param hufftables: output huffman code representation
- * @param hist: histogram used to generat huffman code
- * @param end_of_block: flag whether this is the final huffman code
- *
- * @returns Returns the length in bits of the block with histogram hist encoded
- * with the set hufftable
- */
-uint64_t
-create_hufftables_icf(struct BitBuf2 *bb, struct hufftables_icf *hufftables,
-		      struct isal_mod_hist *hist, uint32_t end_of_block);
 
 #endif

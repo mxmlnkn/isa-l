@@ -96,11 +96,6 @@ static inline uint16_t load_le_u16(uint8_t * buf)
 	return from_le16(load_native_u16(buf));
 }
 
-static inline uint16_t load_be_u16(uint8_t * buf)
-{
-	return from_be16(load_native_u16(buf));
-}
-
 static inline uint32_t load_native_u32(uint8_t * buf)
 {
 	uint32_t ret;
@@ -113,11 +108,6 @@ static inline uint32_t load_le_u32(uint8_t * buf)
 	return from_le32(load_native_u32(buf));
 }
 
-static inline uint32_t load_be_u32(uint8_t * buf)
-{
-	return from_be32(load_native_u32(buf));
-}
-
 static inline uint64_t load_native_u64(uint8_t * buf)
 {
 	uint64_t ret;
@@ -128,11 +118,6 @@ static inline uint64_t load_native_u64(uint8_t * buf)
 static inline uint64_t load_le_u64(uint8_t * buf)
 {
 	return from_le64(load_native_u64(buf));
-}
-
-static inline uint64_t load_be_u64(uint8_t * buf)
-{
-	return from_be64(load_native_u64(buf));
 }
 
 static inline uintmax_t load_le_umax(uint8_t * buf)
@@ -157,11 +142,6 @@ static inline void store_le_u16(uint8_t * buf, uint16_t val)
 	store_native_u16(buf, to_le16(val));
 }
 
-static inline void store_be_u16(uint8_t * buf, uint16_t val)
-{
-	store_native_u16(buf, to_be16(val));
-}
-
 static inline void store_native_u16_to_u64(uint64_t * buf, uint16_t val)
 {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
@@ -181,11 +161,6 @@ static inline void store_le_u32(uint8_t * buf, uint32_t val)
 	store_native_u32(buf, to_le32(val));
 }
 
-static inline void store_be_u32(uint8_t * buf, uint32_t val)
-{
-	store_native_u32(buf, to_be32(val));
-}
-
 static inline void store_native_u64(uint8_t * buf, uint64_t val)
 {
 	memcpy(buf, &val, sizeof(val));
@@ -194,11 +169,6 @@ static inline void store_native_u64(uint8_t * buf, uint64_t val)
 static inline void store_le_u64(uint8_t * buf, uint64_t val)
 {
 	store_native_u64(buf, to_le64(val));
-}
-
-static inline void store_be_u64(uint8_t * buf, uint64_t val)
-{
-	store_native_u64(buf, to_be64(val));
 }
 
 #endif
