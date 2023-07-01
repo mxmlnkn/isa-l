@@ -68,7 +68,7 @@ extern const struct isal_hufftables hufftables_default;
 extern const struct isal_hufftables hufftables_static;
 
 static uint32_t write_stored_block(struct isal_zstream *stream);
-
+#if 0
 static int write_stream_header_stateless(struct isal_zstream *stream);
 static void write_stream_header(struct isal_zstream *stream);
 static int write_deflate_header_stateless(struct isal_zstream *stream);
@@ -1005,7 +1005,7 @@ void isal_deflate_reset(struct isal_zstream *stream)
 	state->crc = 0;
 
 }
-
+#endif
 void isal_gzip_header_init(struct isal_gzip_header *gz_hdr)
 {
 	gz_hdr->text = 0;
@@ -1021,7 +1021,7 @@ void isal_gzip_header_init(struct isal_gzip_header *gz_hdr)
 	gz_hdr->comment_buf_len = 0;
 	gz_hdr->hcrc = 0;
 }
-
+#if 0
 uint32_t isal_write_gzip_header(struct isal_zstream *stream, struct isal_gzip_header *gz_hdr)
 {
 	uint32_t flags = 0, hcrc, hdr_size = GZIP_HDR_BASE;
@@ -2019,3 +2019,4 @@ static void write_trailer(struct isal_zstream *stream)
 	stream->avail_out -= bytes;
 	stream->total_out += bytes;
 }
+#endif
