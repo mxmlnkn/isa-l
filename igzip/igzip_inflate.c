@@ -100,7 +100,7 @@ struct rfc1951_tables {
 
 /* The following tables are based on the tables in the deflate standard,
  * RFC 1951 page 11. */
-static struct rfc1951_tables rfc_lookup_table = {
+static const struct rfc1951_tables rfc_lookup_table = {
         .dist_extra_bit_count = { 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02, 0x03, 0x03, 0x04,
                                   0x04, 0x05, 0x05, 0x06, 0x06, 0x07, 0x07, 0x08, 0x08, 0x09, 0x09,
                                   0x0a, 0x0a, 0x0b, 0x0b, 0x0c, 0x0c, 0x0d, 0x0d, 0x00, 0x00 },
@@ -123,7 +123,7 @@ static struct rfc1951_tables rfc_lookup_table = {
 /*Performs a copy of length repeat_length data starting at dest -
  * lookback_distance into dest. This copy copies data previously copied when the
  * src buffer and the dest buffer overlap. */
-static inline void byte_copy(uint8_t *dest, uint64_t lookback_distance, int repeat_length)
+static inline void byte_copy(uint8_t *dest, uint64_t const lookback_distance, int repeat_length)
 {
         uint8_t *src = dest - lookback_distance;
 
@@ -132,7 +132,7 @@ static inline void byte_copy(uint8_t *dest, uint64_t lookback_distance, int repe
 }
 
 static void
-update_checksum(struct inflate_state *state, uint8_t *start_in, uint64_t length)
+update_checksum(struct inflate_state * const state, uint8_t const * const start_in, uint64_t const length)
 {
         switch (state->crc_flag) {
         case ISAL_GZIP:
@@ -149,7 +149,7 @@ update_checksum(struct inflate_state *state, uint8_t *start_in, uint64_t length)
 }
 
 static void
-finalize_adler32(struct inflate_state *state)
+finalize_adler32(struct inflate_state * const state)
 {
 
         state->crc = (state->crc & 0xffff0000) | (((state->crc & 0xffff) + 1) % ADLER_MOD);
@@ -180,7 +180,7 @@ static const uint8_t bitrev_table[] = {
 /*
  * Returns integer with first length bits reversed and all higher bits zeroed
  */
-static inline uint32_t bit_reverse2(uint16_t bits, uint8_t length)
+static inline uint32_t bit_reverse2(uint16_t const bits, uint8_t const length)
 {
         uint32_t bitrev;
         bitrev = bitrev_table[bits >> 8];
@@ -190,7 +190,7 @@ static inline uint32_t bit_reverse2(uint16_t bits, uint8_t length)
 }
 
 /* Load data from the in_stream into a buffer to allow for handling unaligned data*/
-static inline void inflate_in_load(struct inflate_state *state, int min_required)
+static inline void inflate_in_load(struct inflate_state * const state, int min_required)
 {
         uint64_t temp = 0;
         uint8_t new_bytes;
@@ -221,7 +221,7 @@ static inline void inflate_in_load(struct inflate_state *state, int min_required
         }
 }
 
-static inline uint64_t inflate_in_read_bits_unsafe(struct inflate_state *state, uint8_t bit_count)
+static inline uint64_t inflate_in_read_bits_unsafe(struct inflate_state * const state, uint8_t const bit_count)
 {
         uint64_t ret;
 
@@ -234,19 +234,19 @@ static inline uint64_t inflate_in_read_bits_unsafe(struct inflate_state *state, 
 
 /* Returns the next bit_count bits from the in stream and shifts the stream over
  * by bit-count bits */
-static inline uint64_t inflate_in_read_bits(struct inflate_state *state, uint8_t bit_count)
+static inline uint64_t inflate_in_read_bits(struct inflate_state * const state, uint8_t const bit_count)
 {
         /* Load inflate_in if not enough data is in the read_in buffer */
         inflate_in_load(state, bit_count);
         return inflate_in_read_bits_unsafe(state, bit_count);
 }
 
-static inline void write_huff_code(struct huff_code *huff_code, uint32_t code, uint32_t length)
+static inline void write_huff_code(struct huff_code * const huff_code, uint32_t const code, uint32_t const length)
 {
         huff_code->code_and_length = code | length << 24;
 }
 
-static inline int set_codes(struct huff_code *huff_code_table, int table_length, uint16_t *count)
+static inline int set_codes(struct huff_code *huff_code_table, int const table_length, uint16_t const * const count)
 {
         uint32_t max, code, length;
         uint32_t next_code[MAX_HUFF_TREE_DEPTH + 1];
@@ -278,9 +278,11 @@ static inline int set_codes(struct huff_code *huff_code_table, int table_length,
         return 0;
 }
 
-static inline int set_and_expand_lit_len_huffcode(struct huff_code *lit_len_huff,
-                                                  uint32_t table_length, uint16_t *count,
-                                                  uint16_t *expand_count, uint32_t *code_list)
+static inline int set_and_expand_lit_len_huffcode(struct huff_code * const lit_len_huff,
+                                                  uint32_t const table_length,
+                                                  uint16_t * const count,
+                                                  uint16_t * const expand_count,
+                                                  uint32_t * const code_list)
 {
         int len_sym, len_size, extra_count, extra;
         uint32_t count_total, count_tmp;
@@ -378,15 +380,16 @@ static inline int set_and_expand_lit_len_huffcode(struct huff_code *lit_len_huff
         return 0;
 }
 
-static inline int index_to_sym(int index) { return (index != 513) ? index : 512; }
+static inline int index_to_sym(int const index) { return (index != 513) ? index : 512; }
 
 /* Sets result to the inflate_huff_code corresponding to the huffcode defined by
  * the lengths in huff_code_table,where count is a histogram of the appearance
  * of each code length */
 static void
-make_inflate_huff_code_lit_len(struct inflate_huff_code_large *result,
-                               struct huff_code *huff_code_table, uint32_t table_length,
-                               uint16_t *count_total, uint32_t *code_list, uint32_t multisym)
+make_inflate_huff_code_lit_len(struct inflate_huff_code_large * const result,
+                               struct huff_code * const huff_code_table,
+                               uint32_t const table_length, uint16_t const * const count_total,
+                               uint32_t * const code_list, uint32_t const multisym)
 {
         int i, j;
         uint16_t code = 0;
@@ -598,10 +601,10 @@ make_inflate_huff_code_lit_len(struct inflate_huff_code_large *result,
         }
 }
 
-static inline void make_inflate_huff_code_dist(struct inflate_huff_code_small *result,
-                                               struct huff_code *huff_code_table,
-                                               uint32_t table_length, uint16_t *count,
-                                               uint32_t max_symbol)
+static inline void make_inflate_huff_code_dist(struct inflate_huff_code_small * const result,
+                                               struct huff_code * const huff_code_table,
+                                               uint32_t const table_length, uint16_t const * const count,
+                                               uint32_t const max_symbol)
 {
         int i, j, k;
         uint32_t *long_code_list;
@@ -741,10 +744,10 @@ static inline void make_inflate_huff_code_dist(struct inflate_huff_code_small *r
         }
 }
 
-static inline void make_inflate_huff_code_header(struct inflate_huff_code_small *result,
-                                                 struct huff_code *huff_code_table,
-                                                 uint32_t table_length, uint16_t *count,
-                                                 uint32_t max_symbol)
+static inline void make_inflate_huff_code_header(struct inflate_huff_code_small * const result,
+                                                 struct huff_code * const huff_code_table,
+                                                 uint32_t const table_length, uint16_t const  * const count,
+                                                 uint32_t const max_symbol)
 {
         int i, j, k;
         uint32_t *long_code_list;
@@ -868,7 +871,7 @@ static inline void make_inflate_huff_code_header(struct inflate_huff_code_small 
 }
 
 static int
-header_matches_pregen(struct inflate_state *state)
+header_matches_pregen(struct inflate_state * const state)
 {
 #ifndef ISAL_STATIC_INFLATE_TABLE
         return 0;
@@ -929,7 +932,7 @@ header_matches_pregen(struct inflate_state *state)
 }
 
 static int
-setup_pregen_header(struct inflate_state *state)
+setup_pregen_header(struct inflate_state * const state)
 {
 #ifdef ISAL_STATIC_INFLATE_TABLE
         memcpy(&state->lit_huff_code, &pregen_lit_huff_code, sizeof(pregen_lit_huff_code));
@@ -941,7 +944,7 @@ setup_pregen_header(struct inflate_state *state)
 
 /* Sets the inflate_huff_codes in state to be the huffcodes corresponding to the
  * deflate static header */
-static inline int setup_static_header(struct inflate_state *state)
+static inline int setup_static_header(struct inflate_state * const state)
 {
 #ifdef ISAL_STATIC_INFLATE_TABLE
         memcpy(&state->lit_huff_code, &static_lit_huff_code, sizeof(static_lit_huff_code));
@@ -1005,9 +1008,9 @@ static inline int setup_static_header(struct inflate_state *state)
 
 /* Decodes the next symbol symbol in in_buffer using the huff code defined by
  * huff_code  and returns the value in next_lits and sym_count */
-static inline void decode_next_lit_len(uint32_t *next_lits, uint32_t *sym_count,
-                                       struct inflate_state *state,
-                                       struct inflate_huff_code_large *huff_code)
+static inline void decode_next_lit_len(uint32_t * const next_lits, uint32_t * const sym_count,
+                                       struct inflate_state * const state,
+                                       struct inflate_huff_code_large const * const huff_code)
 {
         uint32_t next_bits;
         uint32_t next_sym;
@@ -1060,8 +1063,8 @@ static inline void decode_next_lit_len(uint32_t *next_lits, uint32_t *sym_count,
         }
 }
 
-static inline uint16_t decode_next_dist(struct inflate_state *state,
-                                        struct inflate_huff_code_small *huff_code)
+static inline uint16_t decode_next_dist(struct inflate_state * const state,
+                                        struct inflate_huff_code_small const * const huff_code)
 {
         uint16_t next_bits;
         uint16_t next_sym;
@@ -1116,8 +1119,8 @@ static inline uint16_t decode_next_dist(struct inflate_state *state,
         }
 }
 
-static inline uint16_t decode_next_header(struct inflate_state *state,
-                                          struct inflate_huff_code_small *huff_code)
+static inline uint16_t decode_next_header(struct inflate_state * const state,
+                                          struct inflate_huff_code_small const * const huff_code)
 {
         uint16_t next_bits;
         uint16_t next_sym;
@@ -1166,7 +1169,7 @@ static inline uint16_t decode_next_header(struct inflate_state *state,
 
 /* Reads data from the in_buffer and sets the huff code corresponding to that
  * data */
-static inline int setup_dynamic_header(struct inflate_state *state)
+static inline int setup_dynamic_header(struct inflate_state * const state)
 {
         int i, j;
         struct huff_code code_huff[CODE_LEN_CODES];
@@ -1396,7 +1399,7 @@ static inline int setup_dynamic_header(struct inflate_state *state)
 /* Reads in the header pointed to by in_stream and sets up state to reflect that
  * header information*/
 static int
-read_header(struct inflate_state *state)
+read_header(struct inflate_state * const state)
 {
         uint8_t bytes;
         uint32_t btype;
@@ -1453,7 +1456,7 @@ read_header(struct inflate_state *state)
 /* Reads in the header pointed to by in_stream and sets up state to reflect that
  * header information*/
 static int
-read_header_stateful(struct inflate_state *state)
+read_header_stateful(struct inflate_state * const state)
 {
         uint64_t read_in_start = state->read_in;
         int32_t read_in_length_start = state->read_in_length;
@@ -1501,7 +1504,7 @@ read_header_stateful(struct inflate_state *state)
         return ret;
 }
 
-static inline int decode_literal_block(struct inflate_state *state)
+static inline int decode_literal_block(struct inflate_state * const state)
 {
         uint32_t len = state->type0_block_len;
         uint32_t bytes = state->read_in_length / 8;
@@ -1568,7 +1571,7 @@ static inline int decode_literal_block(struct inflate_state *state)
 
 /* Decodes the next block if it was encoded using a huffman code */
 int
-decode_huffman_code_block_stateless_base(struct inflate_state *state, uint8_t *start_out)
+decode_huffman_code_block_stateless_base(struct inflate_state * const state, uint8_t const * const start_out)
 {
         uint16_t next_lit;
         uint8_t next_dist;
@@ -1579,7 +1582,7 @@ decode_huffman_code_block_stateless_base(struct inflate_state *state, uint8_t *s
         uint8_t *next_in_tmp, *next_out_tmp;
         uint32_t avail_in_tmp, avail_out_tmp, total_out_tmp;
         uint32_t next_lits, sym_count;
-        struct rfc1951_tables *rfc = &rfc_lookup_table;
+        struct rfc1951_tables const *rfc = &rfc_lookup_table;
 
         state->copy_overflow_length = 0;
         state->copy_overflow_distance = 0;
@@ -1717,7 +1720,7 @@ decode_huffman_code_block_stateless_base(struct inflate_state *state, uint8_t *s
 }
 
 void
-isal_inflate_init(struct inflate_state *state)
+isal_inflate_init(struct inflate_state * const state)
 {
 
         state->read_in = 0;
@@ -1745,7 +1748,7 @@ isal_inflate_init(struct inflate_state *state)
 }
 
 void
-isal_inflate_reset(struct inflate_state *state)
+isal_inflate_reset(struct inflate_state * const state)
 {
         state->read_in = 0;
         state->read_in_length = 0;
@@ -1766,7 +1769,7 @@ isal_inflate_reset(struct inflate_state *state)
 }
 
 static inline uint32_t
-fixed_size_read(struct inflate_state *state, uint8_t **read_buf, int read_size)
+fixed_size_read(struct inflate_state * const state, uint8_t ** const read_buf, int const read_size)
 {
         uint32_t tmp_in_size = state->tmp_in_size;
 
@@ -1795,8 +1798,8 @@ fixed_size_read(struct inflate_state *state, uint8_t **read_buf, int read_size)
 }
 
 static inline uint32_t
-buffer_header_copy(struct inflate_state *state, uint32_t in_len, uint8_t *buf, uint32_t buffer_len,
-                   uint32_t offset, uint32_t buf_error)
+buffer_header_copy(struct inflate_state * const state, uint32_t const in_len,
+                   uint8_t * const buf, uint32_t const buffer_len, uint32_t const offset, uint32_t const buf_error)
 {
         uint32_t len = in_len;
         uint32_t buf_len = buffer_len - offset;
@@ -1825,8 +1828,9 @@ buffer_header_copy(struct inflate_state *state, uint32_t in_len, uint8_t *buf, u
 }
 
 static inline uint32_t
-string_header_copy(struct inflate_state *state, char *str_buf, uint32_t str_len, uint32_t offset,
-                   uint32_t str_error)
+string_header_copy(struct inflate_state * const state,
+                   char *str_buf, uint32_t const str_len,
+                   uint32_t const offset, uint32_t const str_error)
 {
         uint32_t len, max_len = str_len - offset;
 
@@ -1858,7 +1862,7 @@ string_header_copy(struct inflate_state *state, char *str_buf, uint32_t str_len,
 }
 
 static int
-check_gzip_checksum(struct inflate_state *state)
+check_gzip_checksum(struct inflate_state * const state)
 {
         uint64_t trailer, crc, total_out;
         uint8_t *next_in;
@@ -1908,7 +1912,7 @@ check_gzip_checksum(struct inflate_state *state)
 }
 
 static int
-check_zlib_checksum(struct inflate_state *state)
+check_zlib_checksum(struct inflate_state * const state)
 {
 
         uint32_t trailer;
@@ -1956,7 +1960,7 @@ check_zlib_checksum(struct inflate_state *state)
 }
 
 int
-isal_read_gzip_header(struct inflate_state *state, struct isal_gzip_header *gz_hdr)
+isal_read_gzip_header(struct inflate_state * const state, struct isal_gzip_header * const gz_hdr)
 {
         int cm, flags = gz_hdr->flags, id1, id2;
         uint16_t xlen = gz_hdr->extra_len;
@@ -2075,7 +2079,7 @@ isal_read_gzip_header(struct inflate_state *state, struct isal_gzip_header *gz_h
 }
 
 int
-isal_read_zlib_header(struct inflate_state *state, struct isal_zlib_header *zlib_hdr)
+isal_read_zlib_header(struct inflate_state * const state, struct isal_zlib_header * const zlib_hdr)
 {
         int cmf, method, flags;
         uint32_t block_state = state->block_state;
@@ -2122,7 +2126,7 @@ isal_read_zlib_header(struct inflate_state *state, struct isal_zlib_header *zlib
 }
 
 int
-isal_inflate_set_dict(struct inflate_state *state, uint8_t *dict, uint32_t dict_len)
+isal_inflate_set_dict(struct inflate_state * const state, uint8_t const * dict, uint32_t dict_len)
 {
 
         if (state->block_state != ISAL_BLOCK_NEW_HDR ||
@@ -2143,7 +2147,7 @@ isal_inflate_set_dict(struct inflate_state *state, uint8_t *dict, uint32_t dict_
 }
 
 int
-isal_inflate_stateless(struct inflate_state *state)
+isal_inflate_stateless(struct inflate_state * const state)
 {
         uint32_t ret = 0;
         uint8_t *start_out = state->next_out;
@@ -2225,7 +2229,7 @@ isal_inflate_stateless(struct inflate_state *state)
 }
 
 int
-isal_inflate(struct inflate_state *state)
+isal_inflate(struct inflate_state * const state)
 {
 
         uint8_t *start_out = state->next_out;
