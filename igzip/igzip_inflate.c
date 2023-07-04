@@ -2169,7 +2169,7 @@ int isal_read_zlib_header(struct inflate_state *state, struct isal_zlib_header *
 	return ret;
 }
 
-int isal_inflate_set_dict(struct inflate_state *state, uint8_t * dict, uint32_t dict_len)
+int isal_inflate_set_dict(struct inflate_state *state, const uint8_t * dict, uint32_t dict_len)
 {
 
 	if (state->block_state != ISAL_BLOCK_NEW_HDR
