@@ -857,7 +857,7 @@ void isal_inflate_reset(struct inflate_state *state);
  * @returns COMP_OK,
  *          ISAL_INVALID_STATE (dictionary could not be set)
  */
-int isal_inflate_set_dict(struct inflate_state *state, uint8_t *dict, uint32_t dict_len);
+int isal_inflate_set_dict(struct inflate_state *state, const uint8_t *dict, uint32_t dict_len);
 
 /**
  * @brief Read and return gzip header information
