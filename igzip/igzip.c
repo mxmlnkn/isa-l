@@ -933,7 +933,7 @@ reset_match_history(struct isal_zstream *stream)
         }
 }
 
-static void inline set_dist_mask(struct isal_zstream *stream)
+static inline void set_dist_mask(struct isal_zstream *stream)
 {
         struct isal_zstate *state = &stream->internal_state;
         uint32_t hist_size;
@@ -948,7 +948,7 @@ static void inline set_dist_mask(struct isal_zstream *stream)
                 state->dist_mask = IGZIP_HIST_SIZE - 1;
 }
 
-static void inline set_hash_mask(struct isal_zstream *stream)
+static inline void set_hash_mask(struct isal_zstream *stream)
 {
         struct isal_zstate *state = &stream->internal_state;
 
