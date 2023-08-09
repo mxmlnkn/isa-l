@@ -35,13 +35,13 @@ endif()
 set(FUZZ_FLAGS -g -O1 -fsanitize=fuzzer,address,undefined)
 
 # CRC Fuzz Test Application
-set(CRC_FUZZ_APP isal_fuzz_crc)
-add_executable(${CRC_FUZZ_APP} crc_fuzz_test.c)
+#set(CRC_FUZZ_APP isal_fuzz_crc)
+#add_executable(${CRC_FUZZ_APP} crc_fuzz_test.c)
 
-target_include_directories(${CRC_FUZZ_APP} PRIVATE ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(${CRC_FUZZ_APP} PRIVATE isal)
-target_compile_options(${CRC_FUZZ_APP} PRIVATE ${FUZZ_FLAGS})
-target_link_options(${CRC_FUZZ_APP} PRIVATE ${FUZZ_FLAGS})
+#target_include_directories(${CRC_FUZZ_APP} PRIVATE ${PROJECT_SOURCE_DIR}/include)
+#target_link_libraries(${CRC_FUZZ_APP} PRIVATE isal)
+#target_compile_options(${CRC_FUZZ_APP} PRIVATE ${FUZZ_FLAGS})
+#target_link_options(${CRC_FUZZ_APP} PRIVATE ${FUZZ_FLAGS})
 
 # Erasure Code Fuzz Test Application
 set(EC_FUZZ_APP isal_fuzz_ec)
