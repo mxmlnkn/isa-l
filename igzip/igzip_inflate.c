@@ -1053,7 +1053,7 @@ static inline void decode_next_lit_len(uint32_t * const next_lits, uint32_t * co
 	/* next_sym is a possible symbol decoded from next_bits. If bit 15 is 0,
 	 * next_code is a symbol. Bits 9:0 represent the symbol, and bits 14:10
 	 * represent the length of that symbols huffman code. If next_sym is not
-	 * a symbol, it provides a hint of where the large symbols containin
+	 * a symbol, it provides a hint of where the large symbols containing
 	 * this code are located. Note the hint is at largest the location the
 	 * first actual symbol in the long code list.*/
 	next_sym = huff_code->short_code_lookup[next_bits];
@@ -1378,7 +1378,7 @@ static inline int setup_dynamic_header(struct inflate_state * const state)
 			}
 
 		} else if (symbol == 18) {
-			/* If a repeat zeroes if found, update then next
+			/* If a repeat zeroes is found, update the next
 			 * repeated zeroes length lit/len/dist elements to have
 			 * length 0. */
 			i = 11 + inflate_in_read_bits(state, 7);
