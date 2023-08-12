@@ -670,7 +670,7 @@ isal_write_zlib_header(struct isal_zstream *stream, struct isal_zlib_header *z_h
  * value IGZIP_HUFFTABLE_DEFAULT, the stream is set to use the default Huffman
  * code. If type has value IGZIP_HUFFTABLE_STATIC, the stream is set to use the
  * deflate standard static Huffman code, or if type has value
- * IGZIP_HUFFTABLE_CUSTOM, the stream is set to sue the isal_hufftables
+ * IGZIP_HUFFTABLE_CUSTOM, the stream is set to use the isal_hufftables
  * structure input to isal_deflate_set_hufftables.
  *
  * @param stream: Structure holding state information on the compression stream.
@@ -786,13 +786,13 @@ isal_deflate_reset_dict(struct isal_zstream *stream, struct isal_dict *dict_str)
  *
  * The compression level can be set by setting level to any value between
  * ISAL_DEF_MIN_LEVEL and ISAL_DEF_MAX_LEVEL. When the compression level is
- * ISAL_DEF_MIN_LEVEL, hufftables can be set to a table trained for the the
+ * ISAL_DEF_MIN_LEVEL, hufftables can be set to a table trained for the
  * specific data type being compressed to achieve better compression. When a
  * higher compression level is desired, a larger generic memory buffer needs to
  * be supplied by setting level_buf and level_buf_size to represent the chunk of
  * memory. For level x, the suggest size for this buffer this buffer is
- * ISAL_DEFL_LVLx_DEFAULT. The defines ISAL_DEFL_LVLx_MIN, ISAL_DEFL_LVLx_SMALL,
- * ISAL_DEFL_LVLx_MEDIUM, ISAL_DEFL_LVLx_LARGE, and ISAL_DEFL_LVLx_EXTRA_LARGE
+ * ISAL_DEF_LVLx_DEFAULT. The defines ISAL_DEF_LVLx_MIN, ISAL_DEF_LVLx_SMALL,
+ * ISAL_DEF_LVLx_MEDIUM, ISAL_DEF_LVLx_LARGE, and ISAL_DEF_LVLx_EXTRA_LARGE
  * are also provided as other suggested sizes.
  *
  * The equivalent of the zlib FLUSH_SYNC operation is currently supported.
