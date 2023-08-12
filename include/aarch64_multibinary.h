@@ -42,7 +42,7 @@
  * * https://static.docs.arm.com/ihi0057/b/IHI0057B_aadwarf64.pdf?_ga=2.80574487.1870739014.1564969896-1634778941.1548729310
  *
  * ## Usage:
- * 	1. Define dispather function
+ * 	1. Define dispatcher function
  * 	2. name must be \name\()_dispatcher
  * 	3. Prototype should be *"void * \name\()_dispatcher"*
  * 	4. The dispather should return the right function pointer , revision and a string information .
