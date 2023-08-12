@@ -1348,7 +1348,7 @@ static inline int setup_dynamic_header(struct inflate_state * const state)
                         }
 
                 } else if (symbol == 18) {
-                        /* If a repeat zeroes if found, update then next
+                        /* If a repeat zeroes is found, update then next
                          * repeated zeroes length lit/len/dist elements to have
                          * length 0. */
                         i = (uint32_t) (11 + inflate_in_read_bits(state, 7));
