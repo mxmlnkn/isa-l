@@ -1019,6 +1019,68 @@ isal_inflate_stateless(struct inflate_state *state);
 uint32_t
 isal_adler32(uint32_t init, const unsigned char *buf, uint64_t len);
 
+
+
+/**
+ * @brief Structure used to store huffman codes
+ */
+struct huff_code {
+        union {
+                struct {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+                        uint32_t code_and_extra : 24;
+                        uint32_t length2 : 8;
+#else
+                        uint32_t length2 : 8;
+                        uint32_t code_and_extra : 24;
+#endif
+                };
+
+                struct {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+                        uint16_t code;
+                        uint8_t extra_bit_count;
+                        uint8_t length;
+#else
+                        uint8_t length;
+                        uint8_t extra_bit_count;
+                        uint16_t code;
+#endif
+                };
+
+                uint32_t code_and_length;
+        };
+};
+
+
+/**
+ * @param[in,out] lit_len_huff Array of huff_code. huff_code::length is used to initialize
+ *                huff_code::code and huff_code::extra_bits.
+ * @param[in] table_length
+ * @param[in,out] count
+ * @param[in,out] expand_count
+ * @param[out] code_list
+ * @return ISAL_DECOMP_OK or ISAL_INVALID_BLOCK.
+ */
+int set_and_expand_lit_len_huffcode(struct huff_code * const lit_len_huff,
+						  uint32_t const table_length,
+						  uint16_t * const count,
+						  uint16_t * const expand_count,
+						  uint32_t * const code_list);
+
+
+void make_inflate_huff_code_lit_len(struct inflate_huff_code_large * const result,
+					   struct huff_code * const huff_code_table,
+					   uint32_t const /* table_length */, uint16_t const * const count_total,
+					   uint32_t * const code_list, uint32_t const multisym);
+
+int set_codes(struct huff_code * huff_code_table, int const table_length, uint16_t const * const count);
+
+void make_inflate_huff_code_dist(struct inflate_huff_code_small * const result,
+                                 struct huff_code * const huff_code_table,
+                                 uint32_t const table_length,
+                                 uint16_t const * const count,
+                                 uint32_t const max_symbol);
 #ifdef __cplusplus
 }
 #endif
