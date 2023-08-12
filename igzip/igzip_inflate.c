@@ -299,7 +299,7 @@ static inline int set_codes(struct huff_code *huff_code_table, int const table_l
 	return 0;
 }
 
-static inline int set_and_expand_lit_len_huffcode(struct huff_code const * const lit_len_huff,
+int set_and_expand_lit_len_huffcode(struct huff_code const * const lit_len_huff,
 						  uint32_t const table_length,
 						  uint16_t * const count,
 						  uint16_t * const expand_count,
@@ -409,7 +409,7 @@ static inline int index_to_sym(int const index)
 /* Sets result to the inflate_huff_code corresponding to the huffcode defined by
  * the lengths in huff_code_table,where count is a histogram of the appearance
  * of each code length */
-static void make_inflate_huff_code_lit_len(struct inflate_huff_code_large * const result,
+void make_inflate_huff_code_lit_len(struct inflate_huff_code_large * const result,
 					   struct huff_code * const huff_code_table,
 					   uint32_t const /* table_length */, uint16_t const * const count_total,
 					   uint32_t * const code_list, uint32_t const multisym)

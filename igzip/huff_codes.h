@@ -99,37 +99,6 @@
 #define HEAP_TREE_NODE_START (HEAP_TREE_SIZE-1)
 #define MAX_BL_CODE_LEN 7
 
-/**
- * @brief Structure used to store huffman codes
- */
-struct huff_code {
-	union {
-		struct {
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-			uint32_t code_and_extra:24;
-			uint32_t length2:8;
-#else
-			uint32_t length2:8;
-			uint32_t code_and_extra:24;
-#endif
-		};
-
-		struct {
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-			uint16_t code;
-			uint8_t extra_bit_count;
-			uint8_t length;
-#else
-			uint8_t length;
-			uint8_t extra_bit_count;
-			uint16_t code;
-#endif
-		};
-
-		uint32_t code_and_length;
-	};
-};
-
 struct tree_node {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 	uint32_t child;
