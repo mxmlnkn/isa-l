@@ -246,7 +246,7 @@ static inline void write_huff_code(struct huff_code * const huff_code, uint32_t 
         huff_code->code_and_length = code | length << 24;
 }
 
-static inline int set_codes(struct huff_code *huff_code_table, int const table_length, uint16_t const * const count)
+int set_codes(struct huff_code *huff_code_table, int const table_length, uint16_t const * const count)
 {
         uint32_t max, code, length;
         uint32_t next_code[MAX_HUFF_TREE_DEPTH + 1];
@@ -278,11 +278,11 @@ static inline int set_codes(struct huff_code *huff_code_table, int const table_l
         return 0;
 }
 
-static inline int set_and_expand_lit_len_huffcode(struct huff_code * const lit_len_huff,
-                                                  uint32_t const table_length,
-                                                  uint16_t * const count,
-                                                  uint16_t * const expand_count,
-                                                  uint32_t * const code_list)
+int set_and_expand_lit_len_huffcode(struct huff_code * const lit_len_huff,
+                                    uint32_t const table_length,
+                                    uint16_t * const count,
+                                    uint16_t * const expand_count,
+                                    uint32_t * const code_list)
 {
         int len_sym, len_size, extra_count, extra;
         uint32_t count_total, count_tmp;
@@ -385,7 +385,7 @@ static inline int index_to_sym(int const index) { return (index != 513) ? index 
 /* Sets result to the inflate_huff_code corresponding to the huffcode defined by
  * the lengths in huff_code_table,where count is a histogram of the appearance
  * of each code length */
-static void
+void
 make_inflate_huff_code_lit_len(struct inflate_huff_code_large * const result,
                                struct huff_code * const huff_code_table,
                                uint32_t const table_length, uint16_t const * const count_total,
@@ -601,10 +601,10 @@ make_inflate_huff_code_lit_len(struct inflate_huff_code_large * const result,
         }
 }
 
-static inline void make_inflate_huff_code_dist(struct inflate_huff_code_small * const result,
-                                               struct huff_code * const huff_code_table,
-                                               uint32_t const table_length, uint16_t const * const count,
-                                               uint32_t const max_symbol)
+void make_inflate_huff_code_dist(struct inflate_huff_code_small * const result,
+                                 struct huff_code * const huff_code_table,
+                                 uint32_t const table_length, uint16_t const * const count,
+                                 uint32_t const max_symbol)
 {
         int i, j, k;
         uint32_t *long_code_list;
