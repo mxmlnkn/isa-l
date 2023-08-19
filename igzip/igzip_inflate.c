@@ -1231,6 +1231,7 @@ static inline int setup_dynamic_header(struct inflate_state * const state)
 	    && header_matches_pregen(state))
 		return setup_pregen_header(state);
 
+    /* All of these appear when decoding a .bgz file! */
 	if (state->bfinal && state->avail_in <= SINGLE_SYM_THRESH) {
 		multisym = SINGLE_SYM_FLAG;
 	} else if (state->bfinal && state->avail_in <= DOUBLE_SYM_THRESH) {
