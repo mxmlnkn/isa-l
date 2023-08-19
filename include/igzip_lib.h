@@ -740,6 +740,13 @@ void make_inflate_huff_code_lit_len(struct inflate_huff_code_large * const resul
 					   uint32_t const table_length, uint16_t const * const count_total,
 					   uint32_t * const code_list, uint32_t const multisym);
 
+int set_codes(struct huff_code * huff_code_table, int const table_length, uint16_t const * const count);
+
+void make_inflate_huff_code_dist(struct inflate_huff_code_small * const result,
+                                 struct huff_code * const huff_code_table,
+                                 uint32_t const table_length,
+                                 uint16_t const * const count,
+                                 uint32_t const max_symbol);
 #ifdef __cplusplus
 }
 #endif
