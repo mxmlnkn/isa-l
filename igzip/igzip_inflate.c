@@ -1109,7 +1109,7 @@ static uint16_t inline decode_next_dist(struct inflate_state *state,
 	/* next_sym is a possible symbol decoded from next_bits. If bit 15 is 0,
 	 * next_code is a symbol. Bits 9:0 represent the symbol, and bits 14:10
 	 * represent the length of that symbols huffman code. If next_sym is not
-	 * a symbol, it provides a hint of where the large symbols containin
+	 * a symbol, it provides a hint of where the large symbols containing
 	 * this code are located. Note the hint is at largest the location the
 	 * first actual symbol in the long code list.*/
 	next_sym = huff_code->short_code_lookup[next_bits];
