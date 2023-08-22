@@ -229,6 +229,18 @@ enum isal_block_state {
         ISAL_CHECKSUM_CHECK,
 };
 
+
+enum isal_stopping_point
+{
+        ISAL_STOPPING_POINT_NONE                 = 0,
+        ISAL_STOPPING_POINT_END_OF_STREAM_HEADER = 1U << 0U,
+        ISAL_STOPPING_POINT_END_OF_STREAM        = 1U << 1U,  // after gzip footer has been read
+        ISAL_STOPPING_POINT_END_OF_BLOCK_HEADER  = 1U << 2U,
+        ISAL_STOPPING_POINT_END_OF_BLOCK         = 1U << 3U,
+        ISAL_STOPPING_POINT_ALL                  = 0xFFFFFFFFU,
+};
+
+
 /* Inflate Flags */
 #define ISAL_DEFLATE         0 /* Default */
 #define ISAL_GZIP            1
@@ -543,6 +555,12 @@ struct inflate_state {
         uint8_t tmp_out_buffer[2 * ISAL_DEF_HIST_SIZE +
                                ISAL_LOOK_AHEAD]; //!< Temporary buffer containing data from the
                                                  //!< output stream
+
+        enum isal_stopping_point points_to_stop_at;
+        enum isal_stopping_point stopped_at;
+        enum isal_stopping_point tmp_out_stopped_at;
+        /* Only has a meaningful value when stopped_at == ISAL_STOPPING_POINT_END_OF_BLOCK_HEADER. */
+        uint8_t btype;
 };
 
 /******************************************************************************/
@@ -1063,16 +1081,16 @@ struct huff_code {
  * @return ISAL_DECOMP_OK or ISAL_INVALID_BLOCK.
  */
 int set_and_expand_lit_len_huffcode(struct huff_code * const lit_len_huff,
-						  uint32_t const table_length,
-						  uint16_t * const count,
-						  uint16_t * const expand_count,
-						  uint32_t * const code_list);
+                                    uint32_t const table_length,
+                                    uint16_t * const count,
+                                    uint16_t * const expand_count,
+                                    uint32_t * const code_list);
 
 
 void make_inflate_huff_code_lit_len(struct inflate_huff_code_large * const result,
-					   struct huff_code * const huff_code_table,
-					   uint32_t const /* table_length */, uint16_t const * const count_total,
-					   uint32_t * const code_list, uint32_t const multisym);
+                                          struct huff_code * const huff_code_table,
+                                          uint32_t const /* table_length */, uint16_t const * const count_total,
+                                          uint32_t * const code_list, uint32_t const multisym);
 
 int set_codes(struct huff_code * huff_code_table, int const table_length, uint16_t const * const count);
 
