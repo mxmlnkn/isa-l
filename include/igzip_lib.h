@@ -230,6 +230,17 @@ enum isal_block_state {
 };
 
 
+enum isal_stopping_point
+{
+    ISAL_STOPPING_POINT_NONE                 = 0,
+    ISAL_STOPPING_POINT_END_OF_STREAM_HEADER = 1U << 0U,
+    ISAL_STOPPING_POINT_END_OF_STREAM        = 1U << 1U,  // after gzip footer has been read
+    ISAL_STOPPING_POINT_END_OF_BLOCK_HEADER  = 1U << 2U,
+    ISAL_STOPPING_POINT_END_OF_BLOCK         = 1U << 3U,
+    ISAL_STOPPING_POINT_ALL                  = 0xFFFFFFFFU,
+};
+
+
 /* Inflate Flags */
 #define ISAL_DEFLATE	0	/* Default */
 #define ISAL_GZIP	1
@@ -511,6 +522,12 @@ struct inflate_state {
 	int32_t tmp_out_processed;	//!< Number of bytes processed in tmp_out_buffer
 	uint8_t tmp_in_buffer[ISAL_DEF_MAX_HDR_SIZE];	//!< Temporary buffer containing data from the input stream
 	uint8_t tmp_out_buffer[2 * ISAL_DEF_HIST_SIZE + ISAL_LOOK_AHEAD]; 	//!< Temporary buffer containing data from the output stream
+
+	enum isal_stopping_point points_to_stop_at;
+	enum isal_stopping_point stopped_at;
+	enum isal_stopping_point tmp_out_stopped_at;
+	/* Only has a meaningful value when stopped_at == ISAL_STOPPING_POINT_END_OF_BLOCK_HEADER. */
+	uint8_t btype;
 };
 
 /******************************************************************************/
