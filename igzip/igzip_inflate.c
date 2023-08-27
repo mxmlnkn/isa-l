@@ -2006,6 +2006,7 @@ static int check_zlib_checksum(struct inflate_state *state)
 
 int isal_read_gzip_header(struct inflate_state *state, struct isal_gzip_header *gz_hdr)
 {
+    //printf("    isal_read_gzip_header avail_in %i\n", (int)state->avail_in);
 	int cm, flags = gz_hdr->flags, id1, id2;
 	uint16_t xlen = gz_hdr->extra_len;
 	uint32_t block_state = state->block_state;
@@ -2019,6 +2020,7 @@ int isal_read_gzip_header(struct inflate_state *state, struct isal_gzip_header *
 	 * header can continue where it stopped on the last call */
 	switch (block_state) {
 	case ISAL_BLOCK_NEW_HDR:
+        //printf("    isal_read_gzip_header avail_in %i\n", (int)state->avail_in);
 		state->count = 0;
 		flags = UNDEFINED_FLAG;
 		if (tmp_in_size == 0)
@@ -2277,9 +2279,10 @@ int isal_inflate_stateless(struct inflate_state *state)
 	return ret;
 }
 
+
 int isal_inflate(struct inflate_state *state)
 {
-
+    //printf("  isal_inflate\n");
 	uint8_t *start_out = state->next_out;
 	uint32_t avail_out = state->avail_out;
 	uint32_t copy_size = 0;
@@ -2294,6 +2297,7 @@ int isal_inflate(struct inflate_state *state)
 		uint32_t copy_size = state->tmp_out_valid - state->tmp_out_processed;
 		if (copy_size > state->avail_out)
 			copy_size = state->avail_out;
+		//printf("    Return from %i tmp_out sized %i\n", (int)copy_size, state->tmp_out_valid - state->tmp_out_processed);
 
 		memcpy(state->next_out,
 		       &state->tmp_out_buffer[state->tmp_out_processed], copy_size);
@@ -2314,13 +2318,16 @@ int isal_inflate(struct inflate_state *state)
 	if (!state->wrapper_flag && state->crc_flag == IGZIP_GZIP) {
 		struct isal_gzip_header gz_hdr;
 		isal_gzip_header_init(&gz_hdr);
+        //printf("isal_read_gzip_header read, avail_in: %i", (int) state->avail_in);
 		ret = isal_read_gzip_header(state, &gz_hdr);
+        //printf(", ret: %i\n", (int)ret);
 		if (ret < 0)
 			return ret;
 		else if (ret > 0)
 			return ISAL_DECOMP_OK;
 
 		if ((ret == 0) && (state->points_to_stop_at & ISAL_STOPPING_POINT_END_OF_STREAM_HEADER)) {
+            //printf("[inflate] set ISAL_STOPPING_POINT_END_OF_STREAM_HEADER, avail_in: %i\n", (int) state->avail_in);
 			state->stopped_at = ISAL_STOPPING_POINT_END_OF_STREAM_HEADER;
 			return ISAL_DECOMP_OK;
 		}
@@ -2339,6 +2346,7 @@ int isal_inflate(struct inflate_state *state)
 		}
 
 		if ((ret == 0) && (state->points_to_stop_at & ISAL_STOPPING_POINT_END_OF_STREAM_HEADER)) {
+            //printf("zlib?!\n");
 			state->stopped_at = ISAL_STOPPING_POINT_END_OF_STREAM_HEADER;
 			return ISAL_DECOMP_OK;
 		}
@@ -2395,11 +2403,14 @@ int isal_inflate(struct inflate_state *state)
 					old_avail_in = state->avail_in;
 
 					/* Will also return 0 if it hasn't read anything, it seems. */
+                    //printf("    read_header_stateful 1 avail_in %i, final: %i\n", (int)state->avail_in, state->bfinal);
 					ret = read_header_stateful(state);
+                    //printf("        returned with: avail_in %i, final: %i\n", (int)state->avail_in, state->bfinal);
 					made_progress = (old_read_in_length != state->read_in_length) || (old_avail_in != state->avail_in);
 					if (made_progress && (ret == 0)
 						&& (state->points_to_stop_at & ISAL_STOPPING_POINT_END_OF_BLOCK_HEADER)) {
 						state->stopped_at = ISAL_STOPPING_POINT_END_OF_BLOCK_HEADER;
+                        //printf("        set stopping point at EOBH\n");
 						break;
 					}
 					if (ret)
@@ -2410,8 +2421,10 @@ int isal_inflate(struct inflate_state *state)
 				old_avail_in = state->avail_in;
 
 				if (state->block_state == ISAL_BLOCK_TYPE0) {
+                    //printf("    decode_literal_block\n" );
 					ret = decode_literal_block(state);
 				} else {
+                    //printf("    decode_huffman_code_block_stateless\n" );
 					uint8_t *tmp = state->tmp_out_buffer;
 					ret = decode_huffman_code_block_stateless(state, tmp);
 				}
@@ -2427,6 +2440,7 @@ int isal_inflate(struct inflate_state *state)
 			}
 
 			if (!read_buffer_has_been_saved && (state->stopped_at != ISAL_STOPPING_POINT_NONE)) {
+                //printf("    empty out inputs\n");
 				read_buffer_has_been_saved = 1;
 
 				next_in        = state->next_in;
@@ -2512,7 +2526,11 @@ int isal_inflate(struct inflate_state *state)
 					old_read_in_length = state->read_in_length;
 					old_avail_in = state->avail_in;
 
+                    //printf("    read_header_stateful 2 avail_in %i, read_in_length: %i, tmp_in_size: %i, final: %i\n",
+                    //      (int)state->avail_in, (int)state->read_in_length, (int)tmp_in_size, state->bfinal);
 					ret = read_header_stateful(state);
+                    //printf("        returned with: avail_in %i, read_in_length: %i, tmp_in_size: %i, final: %i, ret: %i\n",
+                    //      (int)state->avail_in, (int)state->read_in_length, (int)tmp_in_size, state->bfinal, ret);
 					if (ret)
 						break;
 
@@ -2520,6 +2538,7 @@ int isal_inflate(struct inflate_state *state)
 					if (made_progress && (ret == 0)
 						&& (state->points_to_stop_at & ISAL_STOPPING_POINT_END_OF_BLOCK_HEADER)) {
 						state->stopped_at = ISAL_STOPPING_POINT_END_OF_BLOCK_HEADER;
+                        //printf("        set stopping point at EOBH\n");
 						break;
 					}
 				}
@@ -2543,6 +2562,7 @@ int isal_inflate(struct inflate_state *state)
 			}
 
 			if (!read_buffer_has_been_saved && (state->stopped_at != ISAL_STOPPING_POINT_NONE)) {
+                //printf("    empty out inputs 2\n");
 				read_buffer_has_been_saved = 1;
 
 				next_in        = state->next_in;
