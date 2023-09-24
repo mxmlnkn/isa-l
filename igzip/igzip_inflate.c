@@ -139,6 +139,7 @@ static inline void byte_copy(uint8_t * dest, uint64_t const lookback_distance, i
 
 static void update_checksum(struct inflate_state * const state, uint8_t const * const start_in, uint64_t const length)
 {
+#ifndef NO_CHECKSUM
 	switch (state->crc_flag) {
 	case ISAL_GZIP:
 	case ISAL_GZIP_NO_HDR:
@@ -148,9 +149,12 @@ static void update_checksum(struct inflate_state * const state, uint8_t const * 
 	case ISAL_ZLIB:
 	case ISAL_ZLIB_NO_HDR:
 	case ISAL_ZLIB_NO_HDR_VER:
+    #ifndef NO_ZLIB
 		state->crc = isal_adler32_bam1(state->crc, start_in, length);
+    #endif
 		break;
 	}
+#endif
 }
 
 static void finalize_adler32(struct inflate_state * const state)
@@ -1945,9 +1949,11 @@ static int check_gzip_checksum(struct inflate_state * const state)
 	crc = state->crc;
 	total_out = state->total_out;
 
+    #ifndef NO_CHECKSUM
 	if (trailer != (crc | (total_out << 32)))
 		return ISAL_INCORRECT_CHECKSUM;
 	else
+    #endif
 		return ISAL_DECOMP_OK;
 }
 
@@ -1993,9 +1999,11 @@ static int check_zlib_checksum(struct inflate_state * const state)
 
 	state->block_state = ISAL_BLOCK_FINISH;
 
+    #ifndef NO_CHECKSUM
 	if (isal_bswap32(trailer) != state->crc)
 		return ISAL_INCORRECT_CHECKSUM;
 	else
+    #endif
 		return ISAL_DECOMP_OK;
 }
 
@@ -2096,8 +2104,10 @@ int isal_read_gzip_header(struct inflate_state * const state, struct isal_gzip_h
 		}
 
 		if (flags & HCRC_FLAG) {
+    #ifndef NO_CHECKSUM
 			hcrc = crc32_gzip_refl(hcrc, start_in, state->next_in - start_in);
 			gz_hdr->hcrc = hcrc;
+    #endif
 
 	case ISAL_GZIP_HCRC:
 			ret = fixed_size_read(state, &next_in, GZIP_HCRC_LEN);
@@ -2106,8 +2116,10 @@ int isal_read_gzip_header(struct inflate_state * const state, struct isal_gzip_h
 				return ret;
 			}
 
+    #ifndef NO_CHECKSUM
 			if ((hcrc & 0xffff) != load_le_u16(next_in))
 				return ISAL_INCORRECT_CHECKSUM;
+    #endif
 		}
 
 		state->wrapper_flag = 1;
@@ -2115,9 +2127,10 @@ int isal_read_gzip_header(struct inflate_state * const state, struct isal_gzip_h
 		return ISAL_DECOMP_OK;
 	}
 
+    #ifndef NO_CHECKSUM
 	if (flags & HCRC_FLAG)
 		gz_hdr->hcrc = crc32_gzip_refl(hcrc, start_in, state->next_in - start_in);
-
+    #endif
 	return ret;
 }
 
@@ -2146,9 +2159,10 @@ int isal_read_zlib_header(struct inflate_state * const state, struct isal_zlib_h
 		if (method != DEFLATE_METHOD)
 			return ISAL_UNSUPPORTED_METHOD;
 
+#ifndef NO_CHECKSUM
 		if ((256 * cmf + flags) % 31 != 0)
 			return ISAL_INCORRECT_CHECKSUM;
-
+#endif
 		if (zlib_hdr->dict_flag) {
 	case ISAL_ZLIB_DICT:
 			ret = fixed_size_read(state, &next_in, ZLIB_DICT_LEN);
