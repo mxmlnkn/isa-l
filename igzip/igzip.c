@@ -115,6 +115,8 @@ write_trailer(struct isal_zstream *stream);
 
 // isal_adler32_bam1 - adler with (B | A minus 1) storage
 
+#if !defined(NO_ZLIB) && !defined(NO_DEFLATE)
+
 uint32_t
 isal_adler32_bam1(uint32_t adler32, const unsigned char *start, uint64_t length)
 {
@@ -131,6 +133,10 @@ isal_adler32_bam1(uint32_t adler32, const unsigned char *start, uint64_t length)
         return (adler32 & 0xffff0000) | a;
 }
 
+#endif
+
+#ifndef NO_DEFLATE
+
 static void
 update_checksum(struct isal_zstream *stream, uint8_t *start_in, uint64_t length)
 {
@@ -146,6 +152,8 @@ update_checksum(struct isal_zstream *stream, uint8_t *start_in, uint64_t length)
                 break;
         }
 }
+
+#endif
 
 static void
 sync_flush(struct isal_zstream *stream)
@@ -436,6 +444,8 @@ create_icf_block_hdr(struct isal_zstream *stream, uint8_t *start_in)
                 state->state = ZSTATE_FLUSH_ICF_BUFFER;
         }
 }
+
+#ifndef NO_DEFLATE
 
 static void
 isal_deflate_pass(struct isal_zstream *stream)
@@ -1035,6 +1045,8 @@ isal_deflate_reset(struct isal_zstream *stream)
         state->crc = 0;
 }
 
+#endif  // ifndef NO_DEFLATE
+
 void
 isal_gzip_header_init(struct isal_gzip_header *gz_hdr)
 {
@@ -1061,6 +1073,9 @@ isal_zlib_header_init(struct isal_zlib_header *z_hdr)
         z_hdr->dict_id = 0;
         z_hdr->dict_flag = 0;
 }
+
+
+#ifndef NO_DEFLATE
 
 uint32_t
 isal_write_gzip_header(struct isal_zstream *stream, struct isal_gzip_header *gz_hdr)
@@ -2053,3 +2068,5 @@ write_trailer(struct isal_zstream *stream)
         stream->avail_out -= bytes;
         stream->total_out += bytes;
 }
+
+#endif  // ifndef NO_DEFLATE
