@@ -212,7 +212,7 @@ static inline uint32_t bit_reverse2(uint16_t const bits, uint8_t const length)
 }
 
 /* Load data from the in_stream into a buffer to allow for handling unaligned data*/
-static inline void inflate_in_load(struct inflate_state * const state, int /* min_required */)
+static inline void inflate_in_load(struct inflate_state * const state, int  min_required)
 {
 	uint64_t temp = 0;
 	uint8_t new_bytes;
@@ -414,7 +414,7 @@ static inline int index_to_sym(int const index)
  * of each code length */
 void make_inflate_huff_code_lit_len(struct inflate_huff_code_large * const result,
 					   struct huff_code * const huff_code_table,
-					   uint32_t const /* table_length */, uint16_t const * const count_total,
+					   uint32_t const table_length, uint16_t const * const count_total,
 					   uint32_t * const code_list, uint32_t const multisym)
 {
 	int i, j;
