@@ -316,7 +316,7 @@ _get_last_two_xmms:
         pxor    xmm0, [mask3]
         pshufb  xmm2, xmm0
 
-        pblendvb        xmm2, xmm1     ;xmm0 is implicit
+        pblendvb        xmm2, xmm1, xmm0
         ;;;;;;;;;;
         movdqa  xmm8, xmm7
         pclmulqdq       xmm7, xmm10, 0x1
