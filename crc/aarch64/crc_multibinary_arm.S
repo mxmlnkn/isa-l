@@ -29,14 +29,4 @@
 #include <aarch64_multibinary.h>
 
 
-mbin_interface crc32_iscsi
-mbin_interface crc16_t10dif
-mbin_interface crc16_t10dif_copy
-mbin_interface crc32_ieee
 mbin_interface crc32_gzip_refl
-mbin_interface crc64_ecma_refl
-mbin_interface crc64_ecma_norm
-mbin_interface crc64_iso_refl
-mbin_interface crc64_iso_norm
-mbin_interface crc64_jones_refl
-mbin_interface crc64_jones_norm
