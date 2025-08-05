@@ -71,7 +71,7 @@ endif()
 if(CPU_X86_64)
     # Configure NASM flags
     set(CMAKE_ASM_NASM_FLAGS "-f elf64 -D LINUX")
-    set(CMAKE_ASM_NASM_INCLUDES "-I ${CMAKE_SOURCE_DIR}/include/")
+    set(CMAKE_ASM_NASM_INCLUDES "-I ${CMAKE_CURRENT_SOURCE_DIR}/include/")
     set(USE_NASM ON)
 elseif(CPU_AARCH64 OR CPU_RISCV64)
     # Use C compiler for assembly on ARM and RISC-V
@@ -80,7 +80,7 @@ endif()
 
 # Set include directories
 set(ISAL_INCLUDE_DIRS
-    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 # Initialize EXTERN_HEADERS list
@@ -138,7 +138,7 @@ if(CPU_X86_64 AND USE_NASM)
         if(source MATCHES "\\.asm$")
             get_filename_component(source_dir ${source} DIRECTORY)
             set_source_files_properties(${source} PROPERTIES
-                INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/${source_dir}")
+                INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/include;${CMAKE_CURRENT_SOURCE_DIR}/${source_dir}")
         endif()
     endforeach()
 endif()
@@ -146,13 +146,13 @@ endif()
 # Include directories
 target_include_directories(isal
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
 
 # Generate isa-l.h header
 set(ISAL_HEADER "${CMAKE_BINARY_DIR}/isa-l.h")
-configure_file(${CMAKE_SOURCE_DIR}/cmake/isa-l.h.in ${ISAL_HEADER} @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/isa-l.h.in ${ISAL_HEADER} @ONLY)
 
 # Install targets
 include(GNUInstallDirs)
@@ -188,7 +188,7 @@ install(EXPORT ISALTargets
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-    "${CMAKE_SOURCE_DIR}/cmake/ISALConfig.cmake.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ISALConfig.cmake.in"
     "${CMAKE_BINARY_DIR}/ISALConfig.cmake"
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ISAL
 )
@@ -213,7 +213,7 @@ set(includedir \${prefix}/${CMAKE_INSTALL_INCLUDEDIR})
 set(VERSION ${PROJECT_VERSION})
 
 configure_file(
-    "${CMAKE_SOURCE_DIR}/libisal.pc.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/libisal.pc.in"
     "${CMAKE_BINARY_DIR}/libisal.pc"
     @ONLY
 )
