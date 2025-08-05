@@ -70,6 +70,7 @@ set(IGZIP_X86_64_SOURCES
 )
 
 set(IGZIP_AARCH64_SOURCES
+    igzip/proc_heap_base.c
     igzip/aarch64/igzip_inflate_multibinary_arm64.S
     igzip/aarch64/igzip_multibinary_arm64.S
     igzip/aarch64/igzip_isal_adler32_neon.S
