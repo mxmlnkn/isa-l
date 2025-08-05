@@ -95,7 +95,7 @@ if(ARCH_DEF)
 endif()
 
 if(CPU_AARCH64 OR CPU_RISCV64)
-    set(CMAKE_ASM_FLAGS "${CMAKE_C_FLAGS}")
+    set(CMAKE_ASM_FLAGS "${CMAKE_C_FLAGS} -D__ASSEMBLY__")
 endif()
 
 # Library version (semantic versioning)
