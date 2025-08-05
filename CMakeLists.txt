@@ -161,7 +161,8 @@ list(APPEND EXTERN_HEADERS include/test.h)
 
 # Create the main ISA-L library
 # Build type option
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(ISAL_BUILD_SHARED_LIBS "Build shared libraries" ON)
+set(BUILD_SHARED_LIBS ${ISAL_BUILD_SHARED_LIBS})
 
 # Use module definition file to explicitly control exported symbols.
 # On Windows the .def file lists every public and arch-specific symbol, so the
