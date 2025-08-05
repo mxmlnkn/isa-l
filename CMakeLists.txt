@@ -39,8 +39,8 @@ if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "
 endif()
 
 # Enable testing
-option(BUILD_TESTS "Build the testing tree" ON)
-if(BUILD_TESTS)
+option(ISAL_BUILD_TESTS "Build the testing tree" ON)
+if(ISAL_BUILD_TESTS)
     enable_testing()
     include(CTest)
 endif()
@@ -120,7 +120,8 @@ list(APPEND EXTERN_HEADERS include/test.h)
 
 # Create the main ISA-L library
 # Build type option
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(ISAL_BUILD_SHARED_LIBS "Build shared libraries" ON)
+set(BUILD_SHARED_LIBS ${ISAL_BUILD_SHARED_LIBS})
 
 # Create the main ISA-L library
 add_library(isal
