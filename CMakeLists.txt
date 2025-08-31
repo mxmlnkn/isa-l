@@ -104,11 +104,11 @@ set(LIBISAL_VERSION_MINOR 31)
 set(LIBISAL_VERSION_PATCH 0)
 
 # Include CMake modules for each library component
-include(cmake/erasure_code.cmake)
-include(cmake/raid.cmake)
+#include(cmake/erasure_code.cmake)
+#include(cmake/raid.cmake)
 include(cmake/crc.cmake)
 include(cmake/igzip.cmake)
-include(cmake/mem.cmake)
+#include(cmake/mem.cmake)
 
 # Conditionally build ISAL shim library
 if(BUILD_ISAL_SHIM)
