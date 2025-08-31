@@ -148,12 +148,12 @@ set(LIBISAL_VERSION_MINOR 32)
 set(LIBISAL_VERSION_PATCH 1)
 
 # Include CMake modules for each library component
-include(cmake/erasure_code.cmake)
-include(cmake/raid.cmake)
+#include(cmake/erasure_code.cmake)
+#include(cmake/raid.cmake)
 include(cmake/crc.cmake)
 include(cmake/igzip.cmake)
-include(cmake/mem.cmake)
-include(cmake/misc.cmake)
+#include(cmake/mem.cmake)
+#include(cmake/misc.cmake)
 
 
 # Add test.h to extern headers (used by all modules)
@@ -347,17 +347,3 @@ configure_file(
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libisal.pc"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
-
-# Print configuration summary
-message(STATUS "")
-message(STATUS "ISA-L ${PROJECT_VERSION} configuration summary:")
-message(STATUS "  Build type         : ${CMAKE_BUILD_TYPE}")
-message(STATUS "  Architecture       : ${CMAKE_SYSTEM_PROCESSOR}")
-message(STATUS "  Shared libs        : ${BUILD_SHARED_LIBS}")
-message(STATUS "  Install prefix     : ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "  Build tests        : ${ISAL_BUILD_TESTS}")
-message(STATUS "  Build perf tests   : ${ISAL_BUILD_PERF_TESTS}")
-message(STATUS "  Build fuzz tests   : ${ISAL_BUILD_FUZZ_TESTS}")
-message(STATUS "  Build ISAL shim    : ${ISAL_BUILD_ISAL_SHIM}")
-message(STATUS "  Build igzip CLI    : ${ISAL_BUILD_IGZIP_CLI}")
-message(STATUS "")
